@@ -69,6 +69,7 @@
 				max-width: 800px;
 				padding: 5px;
 				margin: 0 auto;
+				padding-bottom: 70px;
 			}
 
 			.top-nav {
@@ -104,7 +105,7 @@
 				width: 100%;
 				background: #000;
 				opacity: 0.9;
-				z-index: 10000;
+				z-index: 10003;
 			}
 
 			.nav-pannel {
@@ -114,7 +115,7 @@
 				width: 100%;
 				background: none;
 				color: #fff;
-				z-index: 10001;				
+				z-index: 10004;				
 			}
 
 			.child-mod {
@@ -129,6 +130,7 @@
 			}
 
 			.font-size-button {
+				display: inline-block;
 				background: none;
 				border: 1px solid #8c8c8c;
 				color: #fff;
@@ -252,7 +254,7 @@
 			}
 		</style>
 	</head>
-	<body>
+	<body id="body-container">
 		<div id="root" class="container">
 
 			<div class="m-article-action">
@@ -274,7 +276,7 @@
 				<p>一群孩子虽然兴奋，但是心中也有点担忧，毕竟那可是一头青鳞鹰啊，让村中的最强大的壮年男子都心有惧意，而他们却成功的将其所产下的卵一窝端了，有点不真实的感觉。</p>
 			</div>
 			<div class="m-button-bar">
-				<ul class="u-tab">
+				<ul class="u-tab" id="bottom_tool_bar_ul">
 					<li id="prev_button">上一章</li>
 					<li id="next_button">下一章</li>
 				</ul>
@@ -288,22 +290,22 @@
 				</div>
 				<div class="child-mod">
 					<span>背景</span>
-					<div class="bk-container" style="background: #f7eee5;">
+					<div class="bk-container" style="background: #f7eee5;" data-color="#f7eee5">
 						<div class="bk-container-current"></div>
 					</div>
-					<div class="bk-container" style="background: #e9dfc7;">
+					<div class="bk-container" style="background: #e9dfc7;" data-color="#e9dfc7">
 						<div class="bk-container-current" style="display: none;"></div>
 					</div>		
-					<div class="bk-container" style="background: #a4a4a4;">
+					<div class="bk-container" style="background: #a4a4a4;" data-color="#a4a4a4">
 						<div class="bk-container-current" style="display: none;"></div>
 					</div>	
-					<div class="bk-container" style="background: #cdefce;">
+					<div class="bk-container" style="background: #cdefce;" data-color="#cdefce">
 						<div class="bk-container-current" style="display: none;"></div>
 					</div>
-					<div class="bk-container" style="background: #283548;">
+					<div class="bk-container" style="background: #283548;" data-color="#283548">
 						<div class="bk-container-current" style="display: none;"></div>
 					</div>
-					<div class="bk-container" style="background: #0f1410;">
+					<div class="bk-container" style="background: #0f1410;" data-color="#0f1410">
 						<div class="bk-container-current" style="display: none;"></div>
 					</div>														
 				</div>
@@ -357,15 +359,23 @@
 					};
 				})();
 
+				//dom节点的缓存
 				var Dom = {
 					top_nav: $('#top_nav'),
 					bottom_nav: $('.bottom_nav'),
 					font_container: $('.font_container'),
-					font_button: $('#font_button')
+					font_button: $('#font_button'),
+					day_icon: $('#day_icon'),
+					night_icon: $('#night_icon')
 				};
+
+				// 绑定事件
 				var Win = $(window);
 				var Doc = $(document);
 				var RootContainer = $('#fiction_container');
+				var Body = $('#body-container');
+
+				//缓存字体
 				var initFontSize = Util.StorageGetter('font_size');
 				initFontSize = parseInt(initFontSize);
 				if(!initFontSize){
@@ -376,7 +386,6 @@
 				function main(){
 					//todo 整个项目的入口函数
 					EventHandler();
-					console.log(1);
 				};
 
 				function ReaderModel(){
@@ -393,7 +402,7 @@
 						if(Dom.top_nav.css('display') == 'none'){
 								Dom.bottom_nav.show();
 								Dom.top_nav.show();
-						} else {
+						}else {
 								Dom.bottom_nav.hide();
 								Dom.top_nav.hide();
 								Dom.font_container.hide();
@@ -413,8 +422,19 @@
 
 				$('#night-button').click(function(){
 					//todo 触发背景切换事件
+					if(Dom.day_icon.css('display') == 'none'){
+						Dom.day_icon.show();
+						Dom.night_icon.hide();
+						Body.css('background-color','rgb(15, 20, 16)');
+					}else {
+						Dom.night_icon.show();
+						Dom.day_icon.hide();
+						Body.css('background-color','rgb(233, 223, 199)');
+
+					}
 				});
 
+				//字体放大
 				$('#large-font').click(function(){
 					if(initFontSize > 20){
 						return;
@@ -424,6 +444,7 @@
 					Util.StorageSetter('font_size',initFontSize);
 				})
 
+				//字体缩小
 				$('#small-font').click(function(){
 					if(initFontSize < 12){
 						return;
@@ -431,8 +452,9 @@
 					initFontSize -= 1;
 					RootContainer.css('font-size',initFontSize);
 					Util.StorageSetter('font_size',initFontSize);
-				})				
+				})			
 
+				//对屏幕的滚动监控
 				Win.scroll(function(){
 					Dom.bottom_nav.hide();
 					Dom.top_nav.hide();
